@@ -24,7 +24,9 @@ right_backward= 1
 class Motor():
     
     def __init__(self, speed):
+        GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
+        
         GPIO.setup(Motor_A_EN, GPIO.OUT)
         GPIO.setup(Motor_B_EN, GPIO.OUT)
         GPIO.setup(Motor_A_Pin1, GPIO.OUT)
@@ -35,10 +37,11 @@ class Motor():
         self.Stop()
         
         # PWM(channel, frequency)
-        self.pwm_A = GPIO.PWM(Motor_A_EN, 1000)
-        self.pwm_B = GPIO.PWM(Motor_B_EN, 1000)
+        self.pwm_A = GPIO.PWM(Motor_A_EN, 1000) # left
+        self.pwm_B = GPIO.PWM(Motor_B_EN, 1000) # right 
         
-        self.speed = speed
+        self.pwm_A.start(speed)
+        self.pwm_B.start(speed)
     
     def Stop(self):#Motor Stops
         GPIO.output(Motor_A_Pin1, GPIO.LOW)
@@ -48,8 +51,8 @@ class Motor():
         GPIO.output(Motor_A_EN, GPIO.LOW)
         GPIO.output(Motor_B_EN, GPIO.LOW)
 
-    def left(self, status, direction):#Motor 2 positive and negative rotation
-        self.pwm_B.start(0)
+    def Left(self, status, direction):#Motor 2 positive and negative rotation
+        #self.pwm_B.start(0)
         if status == 0: # Stop
             GPIO.output(Motor_B_Pin1, GPIO.LOW)
             GPIO.output(Motor_B_Pin2, GPIO.LOW)
@@ -61,88 +64,75 @@ class Motor():
             if direction == Dir_backward:
                 GPIO.output(Motor_B_Pin1, GPIO.HIGH)
                 GPIO.output(Motor_B_Pin2, GPIO.LOW)
-                # PWM.start(duty cycle)
-                #pwm_B.start(100)
-                self.pwm_B.ChangeDutyCycle(self.speed)
+                #self.pwm_B.ChangeDutyCycle(self.speed)
             elif direction == Dir_forward:
                 GPIO.output(Motor_B_Pin1, GPIO.LOW)
                 GPIO.output(Motor_B_Pin2, GPIO.HIGH)
-                #pwm_B.start(0)
-                self.pwm_B.ChangeDutyCycle(self.speed)
+                #self.pwm_B.ChangeDutyCycle(self.speed)
 
 
-    def right(self, status, direction):#Motor 1 positive and negative rotation
-        self.pwm_A.start(0)
+    def Right(self, status, direction):#Motor 1 positive and negative rotation
+        #self.pwm_A.start(0)
         if status == 0: # Stop
             GPIO.output(Motor_A_Pin1, GPIO.LOW)
             GPIO.output(Motor_A_Pin2, GPIO.LOW)
             GPIO.output(Motor_A_EN, GPIO.LOW)
         else:
-            if direction == Dir_forward:#
+            if direction == Dir_forward:
                 GPIO.output(Motor_A_Pin1, GPIO.HIGH)
                 GPIO.output(Motor_A_Pin2, GPIO.LOW)
-                #pwm_A.start(100)
-                self.pwm_A.ChangeDutyCycle(self.speed)
+                #self.pwm_A.ChangeDutyCycle(self.speed)
             elif direction == Dir_backward:
                 GPIO.output(Motor_A_Pin1, GPIO.LOW)
                 GPIO.output(Motor_A_Pin2, GPIO.HIGH)
-                #pwm_A.start(0)
-                self.pwm_A.ChangeDutyCycle(self.speed)
+                #self.pwm_A.ChangeDutyCycle(self.speed)
         return direction
 
 
-    def move(self, direction, turn):  
+    def Move(self, direction, turn):  
         if direction == 'forward':
             if turn == 'right':
-                self.left(0, left_backward)
-                self.right(1, right_forward)
+                self.Left(0, left_backward)
+                self.Right(1, right_forward)
             elif turn == 'left':
-                self.left(1, left_forward)
-                self.right(0, right_backward)
+                self.Left(1, left_forward)
+                self.Right(0, right_backward)
             else:
-                self.left(1, left_forward)
-                self.right(1, right_forward)
+                self.Left(1, left_forward)
+                self.Right(1, right_forward)
         elif direction == 'backward':
             if turn == 'right':
-                self.left(0, left_forward)
-                self.right(1, right_backward)
+                self.Left(0, left_forward)
+                self.Right(1, right_backward)
             elif turn == 'left':
-                self.left(1, left_backward)
-                self.right(0, right_forward)
+                self.Left(1, left_backward)
+                self.Right(0, right_forward)
             else:
-                self.left(1, left_backward)
-                self.right(1, right_backward)
-        elif direction == 'no':
+                self.Left(1, left_backward)
+                self.Right(1, right_backward)
+        elif direction == 'straight':
             if turn == 'right':
-                self.left(1, left_backward)
-                self.right(1, right_forward)
+                self.Left(1, left_backward)
+                self.Right(1, right_forward)
             elif turn == 'left':
-                self.left(1, left_forward)
-                self.right(1, right_backward)
+                self.Left(1, left_forward)
+                self.Right(1, right_backward)
             else:
-                Stop()
+                self.Stop()
         else:
             pass
         
     def __end__(self):
         self.Stop()
         GPIO.cleanup()             # Release resource
-        
 
-motor = Motor(60);
-motor.move('forward', 'no')
-time.sleep(2)
-motor.move('forward', 'left')
-time.sleep(2)
-motor.move('forward', 'right')
-time.sleep(2)
-motor.Stop()
-time.sleep(2)
-motor.move('backward', 'no')
-time.sleep(2)
-motor.move('backward', 'left')
-time.sleep(2)
-motor.move('backward', 'right')
-time.sleep(2)
-motor.Stop()
-motor.__end__()
+# Test Motor
+'''
+count = 0
+motor = Motor(100) # This needs to be above 90 to keep both of the tires at the same speed
+try:
+    while 1:
+        motor.Move('backward', 'straight')
+except KeyboardInterrupt:
+    motor.__end__()
+'''
