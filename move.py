@@ -37,8 +37,8 @@ class Motor():
         self.Stop()
         
         # PWM(channel, frequency)
-        self.pwm_A = GPIO.PWM(Motor_A_EN, 1000) # left
-        self.pwm_B = GPIO.PWM(Motor_B_EN, 1000) # right 
+        self.pwm_A = GPIO.PWM(Motor_A_EN, 1000)
+        self.pwm_B = GPIO.PWM(Motor_B_EN, 1000) 
         
         self.pwm_A.start(speed)
         self.pwm_B.start(speed)
