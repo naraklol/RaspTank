@@ -5,6 +5,7 @@
 import stream
 import picamera
 import threading
+import image
 
 # Camera Class
 class Camera():
@@ -20,11 +21,15 @@ class Camera():
         self.server = None
         self.server_thread = None
 
-    def capture(self, filename):
+    def capture(self, filename='__stream__.jpeg'):
         if self.streaming:
             self.stream.capture_from_stream(filename)
         else:
             print('not programmed')
+
+    def modify_stream_output(self, func):
+        if self.streaming:
+            self.stream.modify_stream_output(func)
 
     # Starts a server that hosts the current camera stream
     # Can be accessed from the IP address of the pi within a web browser
@@ -33,13 +38,23 @@ class Camera():
         try:
             self.address = ('', 8000)
             self.server = stream.StreamingServer(self.address, stream.StreamingHandler)
-            self.server_thread = threading.Thread(target=self.server.serve_forever, args=())
-            self.server_thread.start()
+
+            threaded = True
+
+            if threaded:
+                self.server_thread = threading.Thread(target=self.server.serve_forever, args=())
+                self.server_thread.start()
+            else:
+                self.server.serve_forever()
+
             self.streaming = True
         except:
             self.camera.stop_recording()
 
-cam = Camera()
-cam.start_stream()
+camera = Camera()
+camera.start_stream()
+camera.capture('__stream__.jpeg')
+image.
+
 while True:
     pass

@@ -30,11 +30,18 @@ class StreamingOutput(object):
         self.condition = Condition()
 
         self.capture = False
-        self.capture_filename = ''
+        self.capture_filename = None
+
+        self.modify_stream = False
+        self.modify_function = None
 
     def capture_from_stream(self, filename):
         self.capture = True
         self.capture_filename = filename
+
+    def modify_stream_output(self, func):
+        self.modify_stream = True
+        self.modify_function = func
 
     # Callback function by picamera to add a new frame to the buffer
     def write(self, buf):
@@ -48,8 +55,14 @@ class StreamingOutput(object):
                 with open(self.capture_filename, 'wb') as file:
                     file.write(buf)
                 self.capture = False
-                self.capture_filename = ''
+                self.capture_filename = None
 
+            print(self.modify_stream)
+            if self.modify_stream:
+                with open('__stream__.jpeg', 'wb') as file:
+                    file.write(buf)
+                buf = self.modify_function()
+                print('here')
             self.buffer.truncate()
             with self.condition:
                 self.frame = self.buffer.getvalue()

@@ -101,3 +101,8 @@ base = BaseServo(init=300, max=500, min=100, channel=12)
 # allow the servomotors to set their initial positions
 time.sleep(1)
 
+while True:
+    claw.loose()
+    time.sleep(1)
+    claw.grab()
+    time.sleep(1)
