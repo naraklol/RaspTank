@@ -88,6 +88,11 @@ class LineTrack():
                 self.direction = dir_forward
                 self.turn = turn_no
                 print('Forward')
+        elif(left == 0 and middle == 1 and right == 0):
+                motor.Move('backward', 'straight')
+                self.direction = dir_forward
+                self.turn = turn_no
+                print('Forward')
         else: # move forward
             self.__end__(motor)
             if(self.turn == turn_left):
