@@ -2,6 +2,8 @@ import RPi.GPIO as GPIO
 import time
 from move import Motor
 from servo_0520 import Servo
+from client import Communication
+from led_0601 import LED
 
 '''
 Black tape problem: It reflects the lights, so the black tape is considered to bright.
@@ -152,6 +154,8 @@ class LineTrack():
 track = LineTrack(dir_forward, turn_no)
 motor = Motor(60) #move.setup()
 servo = Servo()
+led = LED()
+comm = Communication()
 
 while 1:
     track.Run(motor)
@@ -164,6 +168,35 @@ while 1:
         servo.drop()
         track.SetStatus(tank_pos_init)
         print('object drop')
+
+        ############################################
+        # Accepted or Declined by Stationary Robot
+        ############################################
+
+        #connect with stationary robot server and pc server
+        comm.set_enable(True)
+        comm.set_message('R') #put color detected
+
+        data = ''
+
+        #send the detected color to stationary robot
+        #disconnect with the server(reconnect whenever coming back to stationary)
+        if(comm.get_enable_val()):
+            comm.send(comm.get_message())
+            data = comm.receive()
+            comm.set_enable(False)
+            comm.__end__()
+
+        #depending on the answer, corresponding LED will turn on
+        if(data == led.red or data == led.blue):
+            print('data #3',data)
+            led.turn_led(data)
+
+            #connect to server and turn on the correct or wrong music
+            comm.connect_pc()
+            str_data = str(data)
+            comm.send(str_data)
+            comm.__end__()
 
 
 # except KeyboardInterrupt:

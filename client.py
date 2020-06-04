@@ -1,6 +1,6 @@
 # Mobile Robot Client
 import socket
-from led import LED
+#from led_0601 import LED
 
 HOST = '127.0.0.1'    #stationary robot ip address
 PORT = 5005           
@@ -48,40 +48,42 @@ class Communication():
         self.s.close
 
 #this needs to be merged with tracking_xxxx.py
-try:
-    led = LED()
-    comm = Communication()
+#merged with tracking_0520.py
+# try:
+#     led = LED()
+#     comm = Communication()
 
-    #these set_enable and set_message are from camera
-    #message needs to be 'R', 'B', 'G' string data
-    #once camera detects the color, set the enable to true
-    comm.set_enable(True)
-    comm.set_message('R')
+#     #these set_enable and set_message are from camera
+#     #message needs to be 'R', 'B', 'G' string data
+#     #once camera detects the color, set the enable to true
+#     comm.set_enable(True)
+#     comm.set_message('R')
 
-    data = ''
+#     data = ''
 
-    #send the detected color to stationary robot
-    #receive data = correct or wrong info
-    #correct = 33(BLUE LED)
-    #wrong = 29(RED LED)
-    #disconnect with the server(reconnect whenever coming back to stationary)
-    if(comm.get_enable_val()):
-        comm.send(comm.get_message())
-        data = comm.receive()
-        comm.set_enable(False)
-        comm.__end__()
+#     #send the detected color to stationary robot
+#     #receive data = correct or wrong info
+#     #correct = 33(BLUE LED)
+#     #wrong = 29(RED LED)
+#     #disconnect with the server(reconnect whenever coming back to stationary)
+#     if(comm.get_enable_val()):
+#         comm.send(comm.get_message())
+#         data = comm.receive()
+#         comm.set_enable(False)
+#         comm.__end__()
 
-    #depending on the answer, corresponding LED will turn on
-    if(data == led.red or data == led.blue):
-        print('data #3',data)
-        led.turn_led(data)
+#     #depending on the answer, corresponding LED will turn on
+#     if(data == led.red or data == led.blue):
+#         print('data #3',data)
+#         led.turn_led(data)
 
-        #connect to server and turn on the correct or wrong music
-        comm.connect_pc()
-        str_data = str(data)
-        comm.send(str_data)
-        comm.__end__()
+#         #connect to server and turn on the correct or wrong music
+#         comm.connect_pc()
+#         str_data = str(data)
+#         comm.send(str_data)
+#         comm.__end__()
 
-except KeyboardInterrupt:
-    comm.__end__()
-    print('communication end')
+# except KeyboardInterrupt:
+#     comm.__end__()
+#     print('communication end')
+
