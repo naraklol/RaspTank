@@ -54,7 +54,6 @@ class Camera():
 camera = Camera()
 camera.start_stream()
 camera.capture('__stream__.jpeg')
-image.
 
 while True:
     pass

@@ -42,7 +42,7 @@ class LineTrack():
         GPIO.setup(pin_right,GPIO.IN)
         GPIO.setup(pin_middle,GPIO.IN)
         GPIO.setup(pin_left,GPIO.IN)
-        
+
         self.direction = direction
         self.turn = turn
 
@@ -57,7 +57,7 @@ class LineTrack():
         middle = GPIO.input(pin_middle)
         left = GPIO.input(pin_left)
         print('R%d   M%d   L%d'%(right,middle,left))
-        
+
         if(left == 1 and middle == 0 and right == 0): # turn right
             if(self.direction == dir_forward):
                 motor.Move('backward', 'left')
@@ -93,18 +93,25 @@ class LineTrack():
                 self.direction = dir_forward
                 self.turn = turn_no
                 print('Forward')
-        else: # move forward
-            self.__end__(motor)
-            if(self.turn == turn_left):
-                for i in range (0,10000):
-                    motor.Move('backward', 'right')
-                    print('turning left')
-            elif(self.turn == turn_right):
-                for i in range (0,10000):
-                    motor.Move('backward', 'left')
-                    print('turning right')
+        elif(left == 1 and middle == 0 and right == 1):
+            pass
 
-            if(self.turn == turn_no):
+        else: # move forward
+            # self.__end__(motor)
+            print('STOP\n')
+            # if(self.turn == turn_left):
+            #     for i in range (0,10000):
+            #         motor.Move('backward', 'right')
+            #         print('turning left')
+            # elif(self.turn == turn_right):
+            #     for i in range (0,10000):
+            #         motor.Move('backward', 'left')
+            #         print('turning right')
+            if not True:
+                pass
+            # if(self.turn == turn_no):
+            else:
+                motor.Stop()
                 if(self.status == reset):
                     self.status = reached_to_obj
                     print('reached to the object')
@@ -112,55 +119,52 @@ class LineTrack():
                     self.status = head_to_base
                     print('head to the base')
                     #rotate 180 and come back to the starting point
-                    for i in range (0,70000):
-                        motor.Move('backward', 'left')
+                    for i in range (0,67000):
+                        motor.turn_180()
                         print('turning right 180 degree')
-                elif(self.status == head_to_base):
-                    self.status = reached_to_base
-                    print('reached to the base')
+                # elif(self.status == head_to_base):
+                #     self.status = reached_to_base
+                #     print('reached to the base')
                 elif(self.status == tank_pos_init):
                     self.status = reset
                     print('reset')
                     #rotate 180 and come back to the starting point
-                    if(self.turn == turn_left):
-                        for i in range (0,70000):
-                            motor.Move('backward', 'left')
-                            print('turning right 180 degree')
-                    elif(self.turn == turn_right):
-                        for i in range (0,70000):
-                            motor.Move('backward', 'right')
-                            print('turning left 180 degree')
+                    for i in range (0,67000):
+                        motor.turn_180()
+                        print('turning right 180 degree')
 
-                self.__end__(motor)
-        
+                motor.Stop()
+
+
 
     def GetStatus(self):
         return self.status
 
     def SetStatus(self, status):
         self.status = status
-            
-            
+
+
     def __end__(self, motor):
         motor.__end__()
         print('end')
-        
-        
-try:
-    track = LineTrack(dir_forward, turn_no)
-    motor = Motor(50) #move.setup()
-    servo = Servo()
-    while 1:
-        track.Run(motor)
-        if(track.GetStatus() == reached_to_obj):
-            servo.pickup()
-            track.SetStatus(picked_obj)
-            print('object pick up')
-        elif(track.GetStatus() == reached_to_base):
-            servo.drop()
-            track.SetStatus(tank_pos_init)
-            print('object drop')
-        
 
-except KeyboardInterrupt:
-    track.__end__(motor)
+
+track = LineTrack(dir_forward, turn_no)
+motor = Motor(60) #move.setup()
+servo = Servo()
+
+while 1:
+    track.Run(motor)
+
+    if(track.GetStatus() == reached_to_obj):
+        servo.pickup()
+        track.SetStatus(picked_obj)
+        print('object pick up')
+    elif(track.GetStatus() == reached_to_base):
+        servo.drop()
+        track.SetStatus(tank_pos_init)
+        print('object drop')
+
+
+# except KeyboardInterrupt:
+#     track.__end__(motor)

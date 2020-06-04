@@ -23,4 +23,4 @@ class LED:
 
 if __name__ == '__main__':
     led = LED()
-    led.set_color(102,102,255)
+    led.set_color(255,0,255)

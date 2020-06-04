@@ -122,6 +122,15 @@ class Motor():
         else:
             pass
         
+    def turn_180(self):
+        self.Left(1, left_forward)
+        self.Right(1, right_backward)
+
+    def set_speed(self, speed):
+        self.speed = speed
+        self.pwm_A.start(speed)
+        self.pwm_B.start(speed)
+
     def __end__(self):
         self.Stop()
         GPIO.cleanup()             # Release resource
